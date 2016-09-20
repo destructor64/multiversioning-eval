@@ -69,7 +69,7 @@ CODE_SIZES.each do |code_size|
 
             # set up run
             run_config = "#{sched_method} 1000 100 #{fun_iterations} #{OUTER_ITERATIONS/fun_iterations}"
-            apply_irt_env()
+            apply_irt_env
             ENV['IRT_NUM_WORKERS'] = num_threads.to_s
 
             # run

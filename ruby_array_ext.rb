@@ -1,3 +1,4 @@
+
 class Array
 	def median
 		if length > 0
@@ -30,13 +31,13 @@ class Array
 	end
 
 	def standard_deviation
-		return Math.sqrt(self.sample_variance)
+		Math.sqrt(self.sample_variance)
 	end
 	
 	def percentile(percentile)
 		sorted_values = sort
 		k = (percentile*(sorted_values.length-1)+1).floor - 1
 		f = (percentile*(sorted_values.length-1)+1).modulo(1)
-		return sorted_values[k] + (f * (sorted_values[k+1] - sorted_values[k]))
+		sorted_values[k] + (f * (sorted_values[k+1] - sorted_values[k]))
 	end
 end
