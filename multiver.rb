@@ -1,4 +1,7 @@
 
+# environment variables
+MULTIVER_CC = 'MULTIVER_CC'
+MULTIVER_PAPI_DIR = 'MULTIVER_PAPI_DIR'
 
 pre_str = <<EOS
 #include <stdlib.h>
@@ -101,6 +104,8 @@ version_repo += "};\n\n"
 SOURCE_FN = "#{file_name}.cpp"
 BIN_FN = "#{file_name}"
 
+# generate cpp file
+
 File.open(SOURCE_FN, "w+") do |source_file|
 	source_file.puts pre_str
 	source_file.puts fun_repo
@@ -108,4 +113,19 @@ File.open(SOURCE_FN, "w+") do |source_file|
 	source_file.puts main_str
 end
 
-`/software-local/insieme-libs/gcc-latest/bin/g++ #{SOURCE_FN} -O3 -std=c++11 -DIRT_ENABLE_REGION_INSTRUMENTATION -DIRT_USE_PAPI -DIRT_SCHED_POLICY=IRT_SCHED_POLICY_STATIC -I/home/petert/insieme_base/code/runtime/include -I/home/petert/insieme_base/code/common/include -I/software-local/insieme-libs/papi-latest/include -L/software-local/insieme-libs/papi-latest/lib/ -lpapi -lpthread -lrt -o #{BIN_FN}`
+# compile it
+
+compiler = "gcc"
+if ENV[MULTIVER_CC]
+  compiler = ENV[MULTIVER_CC]
+end
+
+papi_dir = "/software-local/insieme-libs/papi-latest"
+if ENV[MULTIVER_PAPI_DIR]
+  papi_dir = ENV[MULTIVER_PAPI_DIR]
+end
+
+irt_defines = '-DIRT_ENABLE_REGION_INSTRUMENTATION -DIRT_USE_PAPI -DIRT_SCHED_POLICY=IRT_SCHED_POLICY_STATIC'
+include_paths = ""-I/home/petert/insieme_base/code/runtime/include -I/home/petert/insieme_base/code/common/include -I#{papi_dir}/include"
+
+`#{compiler} #{SOURCE_FN} -O3 -std=c++11 #{irt_defines} #{include_paths} -L#{papi_dir}/lib/ -lpapi -lpthread -lrt -o #{BIN_FN}`

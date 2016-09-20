@@ -85,7 +85,7 @@ CODE_SIZES.each do |code_size|
 
             # progress update
             eval_count += 1
-            if eval_count%1000 == 0
+            if eval_count%100 == 0
               printf("%10s / %10s runs\n", eval_count, total_evals_required)
             end
           end
