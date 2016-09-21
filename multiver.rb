@@ -115,17 +115,17 @@ end
 
 # compile it
 
-compiler = "gcc"
+compiler = '/software-local/insieme-libs/gcc-latest/bin/g++'
 if ENV[MULTIVER_CC]
   compiler = ENV[MULTIVER_CC]
 end
 
-papi_dir = "/software-local/insieme-libs/papi-latest"
+papi_dir = '/software-local/insieme-libs/papi-latest'
 if ENV[MULTIVER_PAPI_DIR]
   papi_dir = ENV[MULTIVER_PAPI_DIR]
 end
 
 irt_defines = '-DIRT_ENABLE_REGION_INSTRUMENTATION -DIRT_USE_PAPI -DIRT_SCHED_POLICY=IRT_SCHED_POLICY_STATIC'
-include_paths = ""-I/home/petert/insieme_base/code/runtime/include -I/home/petert/insieme_base/code/common/include -I#{papi_dir}/include"
+include_paths = "-I/home/petert/insieme_base/code/runtime/include -I/home/petert/insieme_base/code/common/include -I#{papi_dir}/include"
 
 `#{compiler} #{SOURCE_FN} -O3 -std=c++11 #{irt_defines} #{include_paths} -L#{papi_dir}/lib/ -lpapi -lpthread -lrt -o #{BIN_FN}`

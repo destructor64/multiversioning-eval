@@ -5,7 +5,6 @@ NUM_RUNS = 3
 
 OUTER_ITERATIONS = 200000
 
-STORAGE_FN = 'result_storage.yaml'
 GEN_PATH = 'generated'
 RES_PATH = 'results'
 
@@ -37,12 +36,6 @@ NUM_THREADS = first_n_powers_of_two(7)
 
 SCHED_METHODS = [0,1,2,3,4]
 
-results = {}
-
-if File.exist?(STORAGE_FN)
-  results = YAML.load(STORAGE_FN)
-end
-
 Dir.mkdir GEN_PATH unless File.exist?(GEN_PATH)
 Dir.mkdir RES_PATH unless File.exist?(RES_PATH)
 
@@ -58,7 +51,7 @@ CODE_SIZES.each do |code_size|
 
     # create program version if required
     unless File.exist?(path_fn)
-      `ruby multiver.rb #{num_versions} #{code_size} #{path_fn}`
+      `ruby #{File.dirname(__FILE__)}/multiver.rb #{num_versions} #{code_size} #{path_fn}`
     end
 
     # perform runs and store data
