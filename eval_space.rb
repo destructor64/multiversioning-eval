@@ -1,9 +1,7 @@
 
 require 'fileutils'
 
-NUM_RUNS = 3
-
-OUTER_ITERATIONS = 200000
+require "#{File.dirname(__FILE__)}/setup.rb"
 
 GEN_PATH = 'generated'
 RES_PATH = 'results'
@@ -21,20 +19,6 @@ def apply_irt_env()
     ENV[k.to_s] = v
   end
 end
-
-def first_n_powers_of_two(n)
-  (0...n).map { |v| 2**v }
-end
-
-FUN_ITERATIONS = first_n_powers_of_two(7)
-
-CODE_SIZES = [0,1,5,20,50,100,200,400]
-
-NUM_VERSIONS = first_n_powers_of_two(12)
-
-NUM_THREADS = first_n_powers_of_two(7)
-
-SCHED_METHODS = [0,1,2,3,4]
 
 Dir.mkdir GEN_PATH unless File.exist?(GEN_PATH)
 Dir.mkdir RES_PATH unless File.exist?(RES_PATH)
@@ -61,7 +45,7 @@ CODE_SIZES.each do |code_size|
           SCHED_METHODS.each do |sched_method|
 
             # set up run
-            run_config = "#{sched_method} 1000 100 #{fun_iterations} #{OUTER_ITERATIONS/fun_iterations}"
+            run_config = "#{sched_method} #{CONVERGE_THRESH} #{SWITCH_THRESH} #{fun_iterations} #{OUTER_ITERATIONS/fun_iterations}"
             apply_irt_env
             ENV['IRT_NUM_WORKERS'] = num_threads.to_s
 

@@ -26,16 +26,20 @@ class RunConfig
     [num_versions,code_size,method,converge_thresh,switch_thresh,inner_iterations,outer_iterations,num_threads,run_id].hash
   end
 
-  def initialize(m)
-    @num_versions = m[1]
-    @code_size = m[2]
-    @method = m[3]
-    @converge_thresh = m[4]
-    @switch_thresh = m[5]
-    @inner_iterations = m[6]
-    @outer_iterations = m[7]
-    @num_threads = m[8]
-    @run_id = m[9]
+  def initialize(num_versions,code_size,method,converge_thresh,switch_thresh,inner_iterations,outer_iterations,num_threads,run_id)
+    @num_versions = num_versions
+    @code_size = code_size
+    @method = method
+    @converge_thresh = converge_thresh
+    @switch_thresh = switch_thresh
+    @inner_iterations = inner_iterations
+    @outer_iterations = outer_iterations
+    @num_threads = num_threads
+    @run_id = run_id
+  end
+
+  def self.from_match(m)
+    RunConfig.new(m[1].to_i, m[2].to_i, m[3].to_i, m[4].to_i, m[5].to_i, m[6].to_i, m[7].to_i, m[8].to_i, m[9].to_i)
   end
 end
 
@@ -48,10 +52,10 @@ class RunResult
 
   def initialize(txt)
     res = txt[1].split(",")
-    @cpu_t = res[3]
-    @wall_t = res[4]
-    @l1_icm = res[5]
-    @l2_icm = res[6]
-    @l3_tcm = res[7]
+    @cpu_t = res[3].to_i
+    @wall_t = res[4].to_i
+    @l1_icm = res[5].to_i
+    @l2_icm = res[6].to_i
+    @l3_tcm = res[7].to_i
   end
 end

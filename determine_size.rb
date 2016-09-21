@@ -1,5 +1,5 @@
 
-require 'ruby_array_ext.rb'
+require "#{File.dirname(__FILE__)}/ruby_array_ext.rb"
 
 load_per_fun = ARGV.size > 0 ? ARGV[0].to_i : 10
 
