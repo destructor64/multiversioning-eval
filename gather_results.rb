@@ -1,5 +1,3 @@
-require 'yaml'
-
 require "#{File.dirname(__FILE__)}/result_objects.rb"
 
 STORAGE_FN = 'result_storage.dump'

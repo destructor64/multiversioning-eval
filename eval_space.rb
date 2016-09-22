@@ -10,8 +10,7 @@ IRT_OUTFILE_NAME = 'worker_efficiency.log'
 
 IRT_ENV = {
     :IRT_INST_REGION_INSTRUMENTATION => 'enabled',
-    :IRT_INST_REGION_INSTRUMENTATION_TYPES => 'wall_time,cpu_time,PAPI_L1_ICM,PAPI_L2_ICM,PAPI_L3_TCM',
-    :IRT_AFFINITY_POLICY => 'IRT_AFFINITY_FILL',
+    :IRT_INST_REGION_INSTRUMENTATION_TYPES => INSTRUMENTATION_TYPES,
 }
 
 def apply_irt_env()
@@ -48,6 +47,7 @@ CODE_SIZES.each do |code_size|
             run_config = "#{sched_method} #{CONVERGE_THRESH} #{SWITCH_THRESH} #{fun_iterations} #{OUTER_ITERATIONS/fun_iterations}"
             apply_irt_env
             ENV['IRT_NUM_WORKERS'] = num_threads.to_s
+            ENV['IRT_AFFINITY_POLICY'] = "IRT_AFFINITY_FIXED:#{AFFINITY_MASK.join(',')}"
 
             # run
             `#{path_fn} #{run_config}`
