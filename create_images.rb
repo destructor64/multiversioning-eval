@@ -6,12 +6,22 @@ require "#{File.dirname(__FILE__)}/setup.rb"
 
 # load results
 
-STORAGE_FN = 'result_storage_o7.dump'
+SYSTEMS = ['o7','b07','b10']
+
+WALLT_FUN_FACTOR = {
+    'o7' => 10,
+    'b07' => 35,
+    'b10' => 22,
+}
+
+GP_FN = 'image.gp'
 
 $results = {}
 
-File.open(STORAGE_FN, "rb") do |f|
-  $results = Marshal::load(f)
+SYSTEMS.each do |system|
+  File.open("result_storage_#{system}.dump", "rb") do |f|
+    $results[system] = Marshal::load(f)
+  end
 end
 
 def larger_power_of_two(n)
@@ -22,10 +32,11 @@ end
 
 # value getter
 
-def get_value(value_name, num_versions, code_size, method, converge_thresh, switch_thresh, inner_iterations, outer_iterations, num_threads)
+def get_value(system, value_name, num_versions, code_size, method, converge_thresh, switch_thresh, inner_iterations, outer_iterations, num_threads)
   val_arr = []
   NUM_RUNS.times do |run|
-    result = $results[RunConfig.new(num_versions, code_size, method, converge_thresh, switch_thresh, inner_iterations, outer_iterations, num_threads, run)]
+    config = RunConfig.new(num_versions, code_size, method, converge_thresh, switch_thresh, inner_iterations, outer_iterations, num_threads, run)
+    result = $results[system][config]
     val_arr << result.send(value_name)
   end
   val_arr.median
@@ -42,8 +53,8 @@ VALUE_NAMES = {
 
 FONT = "CMU Serif"
 
-value = "l1_icm"
-#value = "wall_t"
+#value = "l1_icm"
+value = "wall_t"
 
 #num_versions
 #code_size
@@ -54,8 +65,9 @@ switch_thresh = SWITCH_THRESH
 inner_iterations = 1
 outer_iterations = OUTER_ITERATIONS / inner_iterations
 num_threads = 1
+system = "b10"
 
-File.open("image.gp","w+") do |img_file|
+File.open(GP_FN,"w+") do |img_file|
 
   title = "L1 ICM"
 
@@ -81,7 +93,7 @@ EOS
   set palette defined ( 0 1 1 1, 1 0 0 0 )
   set cblabel "#{VALUE_NAMES[value]}" offset 1.8,0,0
   set logscale cb
-  set cbtics 2
+  set cbtics %%TICKSFACTOR%%
   set format cb "%.0s %c"
 
   set xrange [0.5:#{CODE_SIZES.length-1}.5]
@@ -111,8 +123,8 @@ EOS
     gp_str += "$map#{method} << EOD\n"
     NUM_VERSIONS.each do |num_versions|
       CODE_SIZES.each do |code_size|
-        val = get_value(value, num_versions, code_size, method, converge_thresh, switch_thresh, inner_iterations, outer_iterations, num_threads)
-        val /= (code_size+10) if value == "wall_t"
+        val = get_value(system, value, num_versions, code_size, method, converge_thresh, switch_thresh, inner_iterations, outer_iterations, num_threads)
+        val /= (code_size+WALLT_FUN_FACTOR[system]) if value == "wall_t"
         gp_str += sprintf("%16d ", val)
         vals << val
       end
@@ -128,8 +140,15 @@ EOS
 EOS
   end
 
-  gp_str.gsub!("%%CBRANGE%%", "set cbrange [#{larger_power_of_two(vals.min) >> 1}:#{larger_power_of_two(vals.max)}]")
+  min = vals.min
+  max = vals.max
+  factor = (Math.log(max.to_f/min) / Math.log(2))**0.4
+  p factor
+  gp_str.gsub!("%%CBRANGE%%", "set cbrange [#{min}:#{max}]")
+  gp_str.gsub!("%%TICKSFACTOR%%", "#{factor}")
   img_file.puts(gp_str)
 end
+
+`gnuplot #{GP_FN}`
 
 
