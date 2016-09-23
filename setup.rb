@@ -3,7 +3,7 @@ def first_n_powers_of_two(n)
   (0...n).map { |v| 2**v }
 end
 
-NUM_RUNS = 3
+NUM_RUNS = 5
 
 OUTER_ITERATIONS = 200000
 
@@ -21,10 +21,10 @@ hostname = `hostname`
 
 instrumentation_types = 'wall_time,cpu_time,PAPI_L1_ICM,PAPI_L2_ICM,PAPI_L3_TCM'
 num_threads_to_use = first_n_powers_of_two(7)
-affinity_mask = 0.upto(num_threads_to_use.last-1)
+affinity_mask = 0.upto(num_threads_to_use.last-1).to_a
 if hostname.include?("b07")
   num_threads_to_use = [1,2,4,8,12]
-  affinity_mask = 0.upto(num_threads_to_use.last-1)
+  affinity_mask = 0.upto(num_threads_to_use.last-1).to_a
 elsif hostname.include?("b10")
   num_threads_to_use = first_n_powers_of_two(6)
   affinity_mask = (0...4).map { |thread| (0...8).map { |core| core*4+thread }}.flatten

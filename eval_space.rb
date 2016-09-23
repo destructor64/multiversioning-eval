@@ -43,8 +43,21 @@ CODE_SIZES.each do |code_size|
         NUM_THREADS.each do |num_threads|
           SCHED_METHODS.each do |sched_method|
 
-            # set up run
+            # progress update
+            eval_count += 1
+            if eval_count%100 == 0
+              printf("%10s / %10s runs\n", eval_count, total_evals_required)
+            end
+
+            # set up config
             run_config = "#{sched_method} #{CONVERGE_THRESH} #{SWITCH_THRESH} #{fun_iterations} #{OUTER_ITERATIONS/fun_iterations}"
+            result_fn = "#{prog_config}_#{run_config.gsub(" ", "_")}_threads#{num_threads}_run#{run}"
+            full_result_path = File.join(RES_PATH, result_fn)
+
+            # bail if already complete
+            next if File.exist? full_result_path
+
+            # set up environment
             apply_irt_env
             ENV['IRT_NUM_WORKERS'] = num_threads.to_s
             ENV['IRT_AFFINITY_POLICY'] = "IRT_AFFINITY_FIXED:#{AFFINITY_MASK.join(',')}"
@@ -53,17 +66,10 @@ CODE_SIZES.each do |code_size|
             `#{path_fn} #{run_config}`
 
             # store the results
-            result_fn = "#{prog_config}_#{run_config.gsub(" ", "_")}_threads#{num_threads}_run#{run}"
             if !File.exist?(IRT_OUTFILE_NAME)
               puts "WARNING: no output generated for #{result_fn}"
             else
-              FileUtils.mv(IRT_OUTFILE_NAME, File.join(RES_PATH, result_fn))
-            end
-
-            # progress update
-            eval_count += 1
-            if eval_count%100 == 0
-              printf("%10s / %10s runs\n", eval_count, total_evals_required)
+              FileUtils.mv(IRT_OUTFILE_NAME, full_result_path)
             end
           end
         end

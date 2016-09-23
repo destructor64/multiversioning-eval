@@ -3,7 +3,8 @@ require "#{File.dirname(__FILE__)}/ruby_array_ext.rb"
 
 load_per_fun = ARGV.size > 0 ? ARGV[0].to_i : 10
 
-test_sizes = [400, 600, 800, 1000, 2000]
+#test_sizes = [400, 600, 800, 1000, 2000]
+test_sizes = [800, 1000]
 bin_sizes = []
 
 test_sizes.each do |v|
