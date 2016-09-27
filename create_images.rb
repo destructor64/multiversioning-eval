@@ -55,7 +55,7 @@ VALUE_NAMES = {
 
 FONT = "CMU Serif"
 
-NUM_CHARTS = 4
+NUM_CHARTS = 2
 
 W = NUM_CHARTS==2 ? 3400 : 6000
 H = 1500
@@ -64,30 +64,29 @@ LEFT = NUM_CHARTS==2 ? 0.1 : 0.06
 RIGHT = NUM_CHARTS==2 ? 0.84 : 0.89
 
 #value = "l1_icm"
-value = "l2_icm"
+#value = "l2_icm"
 #value = "l3_tcm"
-#value = "wall_t"
+value = "wall_t"
 
 #num_versions
 #code_size
-method = 1
+#method = 1
 #methods = [0,1]#,3,4]
+methods = [1,2]
 converge_thresh = CONVERGE_THRESH
 switch_thresh = SWITCH_THRESH
 inner_iterations = 1
 #inner_iterations_vec = [1,2,4,8]
-#num_threads = 1
+num_threads = 1
 #num_threads_vec = [2,8,32,64]
 #num_threads_vec = [2,4,8,12]
-num_threads_vec = [2,8,16,32]
+#num_threads_vec = [2,8,16,32]
 
 #system = "o7"
 system = "b10"
 #system = "b07"
 
 File.open(GP_FN,"w+") do |img_file|
-
-  title = "L1 ICM"
 
   vals = []
 
@@ -101,24 +100,25 @@ File.open(GP_FN,"w+") do |img_file|
   if (!exists("MP_GAP"))    MP_GAP = 0.01
 EOS
 
-  #iteratee = methods
+  iteratee = methods
   #iteratee = inner_iterations_vec
-  iteratee = num_threads_vec
+  #iteratee = num_threads_vec
 
   gp_str += "set multiplot layout 1,#{iteratee.size} margins screen MP_LEFT, MP_RIGHT, MP_BOTTOM, MP_TOP spacing screen MP_GAP\n\n"
 
-  #methods.each do |method|
+  methods.each do |method|
   #inner_iterations_vec.each do |inner_iterations|
-  num_threads_vec.each do |num_threads|
-    #iterator = method
+  #num_threads_vec.each do |num_threads|
+    iterator = method
     #iterator = inner_iterations
-    iterator = num_threads
+    #iterator = num_threads
 
     outer_iterations = OUTER_ITERATIONS / inner_iterations
 
     gp_str += <<EOS
 
-  set title "#{METHOD_NAMES[method]}, it = #{inner_iterations}" font '#{FONT}, 80' offset 0,-1
+  set title "#{METHOD_NAMES[method]}" font '#{FONT}, 80' offset 0,-1
+  #set title "#{METHOD_NAMES[method]}, it = #{inner_iterations}" font '#{FONT}, 80' offset 0,-1
   #set title "#{METHOD_NAMES[method]}, #threads = #{num_threads}" font '#{FONT}, 80' offset 0,-1
   set palette defined ( 0 1 1 1, 1 0 0 0 )
   set cblabel "#{VALUE_NAMES[value]}" offset 1.0,0,0
